@@ -1,0 +1,8 @@
+# Real NeMo Colang input rail reused for each application trust boundary.
+models: []
+rails:
+  input:
+    flows:
+      - workshop boundary
+      - block bulk exports
+      - protect retrieved context

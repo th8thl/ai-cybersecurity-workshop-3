@@ -1,0 +1,84 @@
+[
+  {
+    "slug": "account-recovery",
+    "title": "Account recovery",
+    "visibility": "shared",
+    "approved": true,
+    "file": "clean/account-recovery.pdf",
+    "group": "clean"
+  },
+  {
+    "slug": "wireless-access",
+    "title": "Wireless access",
+    "visibility": "shared",
+    "approved": true,
+    "file": "clean/wireless-access.pdf",
+    "group": "clean"
+  },
+  {
+    "slug": "printing",
+    "title": "Printing assistance",
+    "visibility": "shared",
+    "approved": true,
+    "file": "clean/printing.pdf",
+    "group": "clean"
+  },
+  {
+    "slug": "study-support",
+    "title": "Academic support",
+    "visibility": "shared",
+    "approved": true,
+    "file": "clean/study-support.pdf",
+    "group": "clean"
+  },
+  {
+    "slug": "security-review",
+    "title": "Security review evidence",
+    "visibility": "shared",
+    "approved": true,
+    "file": "clean/security-review.pdf",
+    "group": "clean"
+  },
+  {
+    "slug": "alice-billing",
+    "title": "Alice private billing note",
+    "visibility": "private",
+    "owner": "alice",
+    "approved": true,
+    "file": "clean/alice-billing.pdf",
+    "group": "clean"
+  },
+  {
+    "slug": "bob-billing",
+    "title": "Bob private billing note",
+    "visibility": "private",
+    "owner": "bob",
+    "approved": true,
+    "file": "clean/bob-billing.pdf",
+    "group": "clean"
+  },
+  {
+    "slug": "recovery-injection",
+    "title": "Urgent account recovery update",
+    "visibility": "shared",
+    "approved": false,
+    "file": "poisoned/recovery-injection.pdf",
+    "group": "poisoned"
+  },
+  {
+    "slug": "review-poison",
+    "title": "Unverified security review",
+    "visibility": "shared",
+    "approved": false,
+    "file": "poisoned/review-poison.pdf",
+    "group": "poisoned"
+  },
+  {
+    "slug": "benign-training-quote",
+    "title": "Security training quotation",
+    "visibility": "shared",
+    "approved": true,
+    "file": "poisoned/benign-training-quote.pdf",
+    "group": "poisoned"
+  }
+]

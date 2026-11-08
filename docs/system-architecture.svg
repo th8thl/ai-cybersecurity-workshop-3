@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680" role="img" aria-labelledby="title desc">
+  <title id="title">Session 3 Django RAG architecture and trust boundaries</title>
+  <desc id="desc">Django authenticates the user. Delegated MCP access reaches a shared knowledge retrieval service. SQLite controls source permissions and integrity; a short-lived worker searches Chroma. Retrieved evidence passes provenance and NeMo checks before generation and source validation.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0L10 5L0 10" fill="none" stroke="#147d92" stroke-width="2"/></marker>
+    <style>text{font-family:Segoe UI,Arial,sans-serif;fill:#17212b}.title{font-size:27px;font-weight:700}.label{font-size:18px;font-weight:700}.detail{font-size:15px;fill:#526773}.box{fill:#fffdf7;stroke:#c6d6d8;stroke-width:2}.boundary{fill:#fff5e9;stroke:#d45d27;stroke-width:2;stroke-dasharray:7 5}.edge{fill:none;stroke:#147d92;stroke-width:2.5;marker-end:url(#arrow)}</style>
+  </defs>
+  <rect width="1200" height="680" fill="#f4f1e8"/>
+  <text x="38" y="46" class="title">Session 3 · Protect the knowledge entering runtime context</text>
+  <rect x="35" y="80" width="230" height="100" rx="12" class="box"/>
+  <text x="55" y="114" class="label">Browser / Django</text><text x="55" y="142" class="detail">Session login + CSRF</text><text x="55" y="164" class="detail">Knowledge workspace</text>
+  <rect x="325" y="80" width="245" height="100" rx="12" class="boundary"/>
+  <text x="345" y="114" class="label">Delegated MCP access</text><text x="345" y="142" class="detail">Token outside model prompt</text><text x="345" y="164" class="detail">Server checks knowledge:read</text>
+  <rect x="630" y="80" width="235" height="100" rx="12" class="boundary"/>
+  <text x="650" y="114" class="label">Retrieval service</text><text x="650" y="142" class="detail">Owner / shared / approval</text><text x="650" y="164" class="detail">Revalidate each result</text>
+  <rect x="925" y="80" width="240" height="100" rx="12" class="box"/>
+  <text x="945" y="114" class="label">SQLite source records</text><text x="945" y="142" class="detail">Documents and passages</text><text x="945" y="164" class="detail">Hash / revision / model</text>
+  <path d="M265 130H318M570 130H623M865 130H918" class="edge"/>
+  <rect x="630" y="245" width="235" height="100" rx="12" class="box"/>
+  <text x="650" y="279" class="label">Vector worker / Chroma</text><text x="650" y="307" class="detail">Reference vectors + metadata</text><text x="650" y="329" class="detail">Serialized local operations</text>
+  <rect x="925" y="245" width="240" height="100" rx="12" class="box"/>
+  <text x="945" y="279" class="label">Ollama embeddings</text><text x="945" y="307" class="detail">Same model: chunks / query</text><text x="945" y="329" class="detail">Similarity does not mean trust</text>
+  <path d="M750 180V238M865 294H918" class="edge"/>
+  <rect x="35" y="245" width="535" height="100" rx="12" class="box"/>
+  <text x="55" y="279" class="label">Trusted local ingestion command</text><text x="55" y="307" class="detail">Synthetic corpus → document records → bounded chunks</text><text x="55" y="329" class="detail">Generate embeddings and index references; no model training</text>
+  <path d="M570 294H623" class="edge"/>
+  <rect x="35" y="420" width="245" height="110" rx="12" class="boundary"/>
+  <text x="55" y="455" class="label">Runtime context checks</text><text x="55" y="483" class="detail">Verify MCP-returned sources</text><text x="55" y="507" class="detail">NeMo retrieval-content flow</text>
+  <rect x="335" y="420" width="235" height="110" rx="12" class="box"/>
+  <text x="355" y="455" class="label">Qwen / optional Gemini</text><text x="355" y="483" class="detail">Passages = untrusted evidence</text><text x="355" y="507" class="detail">No write tools in RAG path</text>
+  <rect x="630" y="420" width="235" height="110" rx="12" class="boundary"/>
+  <text x="650" y="455" class="label">Grounding validation</text><text x="650" y="483" class="detail">Schema + citation + excerpt</text><text x="650" y="507" class="detail">Unsupported draft → abstain</text>
+  <rect x="925" y="420" width="240" height="110" rx="12" class="box"/>
+  <text x="945" y="455" class="label">Browser answer + Debug</text><text x="945" y="483" class="detail">Escaped text, cited sources</text><text x="945" y="507" class="detail">Per-user / session evidence</text>
+  <path d="M650 180V209H300V395H157V413M280 475H328M570 475H623M865 475H918" class="edge"/>
+  <rect x="35" y="575" width="1130" height="70" rx="12" class="box"/>
+  <text x="55" y="604" class="label">Runtime events: request ID · actor · session fingerprint · source IDs · stage verdicts · outcome</text>
+  <text x="55" y="628" class="detail">No raw questions, private passage text, credentials or model drafts in persistent telemetry. Local processes are not an OS sandbox.</text>
+</svg>

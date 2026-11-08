@@ -1,0 +1,24 @@
+{% extends "tickets/base.html" %}
+{% block content %}
+<div class="page-head"><div><h1>Knowledge assistant</h1><p class="muted">Find answers in the support knowledge base. Answers include source excerpts.</p></div></div>
+{% if error %}<p class="application-error" role="alert">{{ error }}</p>{% endif %}
+{% if not authorization or 'knowledge:read' not in authorization.scopes %}<p class="notice">Grant <strong>Search my permitted knowledge base</strong> in <a href="{% url 'assistant_authorization' %}">Authorization</a> before asking a question. Website sign-in and assistant permission are separate.</p>{% endif %}
+<div class="workspace"><section class="panel"><div class="panel-head"><h2>Ask the knowledge base</h2>
+<form method="post" id="rag-form">{% csrf_token %}
+<label for="question">Question</label><textarea id="question" name="question" maxlength="2000" required>{{ question }}</textarea>
+<div class="provider"><label for="provider">Answer model</label><select id="provider" name="provider"><option value="qwen" {% if provider == 'qwen' %}selected{% endif %}>Qwen · local AI</option><option value="mock" {% if provider == 'mock' %}selected{% endif %}>Demo · fixed responses</option><option value="gemini" {% if provider == 'gemini' %}selected{% endif %}>Gemini · optional</option></select>
+<label for="method">Search</label><select id="method" name="method"><option value="vector" {% if method == 'vector' %}selected{% endif %}>Semantic · vectors</option><option value="keyword" {% if method == 'keyword' %}selected{% endif %}>Keyword · exact tokens</option></select></div>
+<div class="examples"><button name="action" value="answer">Get answer</button><button class="secondary" name="action" value="search">Inspect search only</button></div><p id="rag-status" role="status" aria-live="polite"></p></form>
+</div><div class="detail-body">
+{% if turn %}<p class="muted">Request {{ turn.request_id }}</p>{% if turn.notice %}<p class="notice">{{ turn.notice }}</p>{% endif %}
+{% if turn.answer %}{% if turn.answer.abstain %}<p class="notice">I do not have a supported answer in the retrieved sources.</p>{% else %}<h2>Source-supported excerpts</h2>{% for claim in turn.answer.claims %}<blockquote>{{ claim.text }}<footer><strong>[{{ claim.citation }}]</strong></footer></blockquote>{% endfor %}{% endif %}{% endif %}
+<h2>Retrieved sources</h2>{% for source in turn.sources %}<details class="notice"><summary>{{ source.title }} · {{ source.id }} · page {{ source.page }} · distance {{ source.distance }}</summary><p>{{ source.text }}</p><small>Source: {{ source.source }} · page {{ source.page }} · revision {{ source.revision }} · approved: {{ source.approved|yesno:"yes,no" }}</small></details>{% empty %}<p>No matching permitted source passed retrieval checks.</p>{% endfor %}
+{% else %}<p>Try: <strong>How do I recover my account?</strong> or <strong>What happens to my billing charges?</strong></p>{% endif %}
+</div></section><aside class="sidebar"><section class="panel"><div class="panel-head"><h2>Knowledge base</h2><p class="muted">Documents available in your catalog. Unapproved sources may be listed for review.</p></div>{% for doc in documents %}<div class="ticket-link"><strong>{{ doc.title }}</strong><small>{{ doc.slug }} · {{ doc.visibility }} · {% if doc.approved %}approved{% else %}unreviewed{% endif %}</small></div>{% empty %}<p class="empty">No documents yet. Load the workshop documents in Exercise 2.</p>{% endfor %}</section></aside></div>
+<details class="panel workshop"><summary>Debug · retrieval, embeddings, prompts and runtime checks</summary><div class="inspection"><p>Embeddings: {{ embedding_provider }} / {{ embedding_model }}. NeMo: {% if nemo_enabled %}on · {{ nemo_mode }}{% else %}off{% endif %}.</p>
+{% if embedding_provider == 'demo' %}<p class="notice">Demo embeddings use a fixed synonym table. They demonstrate vector mechanics, not learned semantic understanding.</p>{% endif %}
+<p>Lower cosine distance means greater similarity, not truth, authorization or confidence. Model answers and MCP results are untrusted.</p><h2>Request trace</h2><pre>{{ inspection }}</pre><h2>Exact model prompt</h2><pre>{{ prompts }}</pre>
+<h2>Your runtime events</h2>{% for event in events %}<div class="audit">{{ event.created_at }} · {{ event.request_id }} · {{ event.outcome }}<pre>{{ event.details }}</pre></div>{% endfor %}</div></details>
+<form method="post" style="margin-top:12px">{% csrf_token %}<button class="secondary" name="action" value="clear">Clear this browser's last answer</button></form>
+{% endblock %}
+{% block scripts %}<script>document.getElementById('rag-form').addEventListener('submit',()=>{document.getElementById('rag-status').textContent='Searching the knowledge base… please wait.';});</script>{% endblock %}
