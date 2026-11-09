@@ -15,6 +15,18 @@ def chunks(body, words=100, overlap=20):
             if start+words >= len(tokens):
                 break
 
+def text_passages(document):
+    pages = document.source_pages or [{'page': 1, 'text': document.body}]
+    document_checksum = digest(document.body)
+    parts = ((page['page'], text) for page in pages for text in chunks(page['text']))
+    return [
+        Passage(document=document, ordinal=ordinal, page=page, text=text,
+                checksum=digest(text), document_checksum=document_checksum,
+                revision=document.revision, embedding_model='', vector=[])
+        for ordinal, (page, text) in enumerate(parts, 1)
+    ]
+
+
 def index_document(document):
     source_hash, revision = digest(document.body), document.revision
     if not source_unchanged(document):
@@ -22,17 +34,18 @@ def index_document(document):
     pages = document.source_pages or [{'page':1,'text':document.body}]
     if document.source_pages and document.body!='\n\n'.join(p['text'] for p in pages):
         raise ValueError('Extracted PDF text was edited independently of its page map. Re-import the PDF.')
-    parts = [(page['page'],text) for page in pages for text in chunks(page['text'])]
-    texts = [text for _,text in parts]
-    vectors = embed(texts)  # No partial SQLite update if the embedding service fails.
+    passages = text_passages(document)
+    vectors = embed([passage.text for passage in passages])
+    embedding_model = model_name()
+    for passage, vector in zip(passages, vectors):
+        passage.embedding_model = embedding_model
+        passage.vector = vector
     with transaction.atomic():
         document = Document.objects.select_for_update().get(pk=document.pk)
         if digest(document.body)!=source_hash or document.revision!=revision or not source_unchanged(document):
             raise ValueError('Document changed while embedding. Run index_knowledge again.')
         document.passages.all().delete()
-        passages = Passage.objects.bulk_create([Passage(document=document,ordinal=i+1,text=text,
-            page=parts[i][0],checksum=digest(text),document_checksum=digest(document.body),revision=document.revision,
-            embedding_model=model_name(),vector=vector) for i,(text,vector) in enumerate(zip(texts,vectors))])
+        Passage.objects.bulk_create(passages)
     # Old vector IDs are harmless: retrieval rechecks their live SQLite rows.
     # If Chroma fails, rerun index_knowledge; no stale vector is trusted.
     upsert(passages)

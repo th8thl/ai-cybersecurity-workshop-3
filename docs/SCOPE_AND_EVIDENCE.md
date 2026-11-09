@@ -13,7 +13,7 @@ Mapped to **4 Session Matrix!D2:D13** and **Notes!A11:A13** in the supplied curr
 | MCP/RAG access boundaries | Scoped search; bypass website; reject forged actor | search_knowledge; exercise_rag_mcp; rag_healthcheck |
 | Tool outputs as untrusted runtime context | Revalidate returned text and metadata before prompting | controls.check_retrieved; forged-MCP-text test |
 | User/session isolation | Alice/Bob private notes and separate browser last turns | test_rag_access/interface; Exercise 8 |
-| Hallucinated findings, FP/FN | Compare supported SQL evidence with invented CWE-89 claim | security-review/review-poison; grounding tests |
+| Hallucinated findings, FP/FN | Compare supported SQL evidence with invented CWE-89 claim | security-review/appsec-2026-112-addendum; grounding tests |
 | Runtime guardrail checks and bypasses | Real NeMo retrieval flow; approved injection; benign quote | policy.py/runtime.co/runtime.yml; test_rag_runtime |
 | Runtime logs and monitoring | Correlate request/source IDs, verdicts and outcomes | RetrievalEvent, Debug, Exercise 9 |
 | False positive/negative measurement | Labeled boundary evaluation with errors separated | data/context_cases.csv; evaluate_rag.py |

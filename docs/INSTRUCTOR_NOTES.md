@@ -29,3 +29,7 @@ Run `python scripts/verify_workshop.py` in solution. It requires all checks. Use
 Ask for the exercise, exact input, selected answer/embedding providers, observed stage and full error. A timeout is not an authorization denial. Restore service availability before evaluating a defense. For a changed source or embedding model, reindex; for prompt or NeMo changes, restart Django.
 
 The complete fixture checker uses actual local MCP, Chroma and NeMo, but explicit deterministic answer/embedding fixtures. The optional live checker uses Ollama. A local check does not prove the Codespaces environment or optional Gemini provider was exercised. Record the environment actually verified.
+
+## Source-document realism
+
+See [corpus teaching notes](CORPUS.md). Every PDF contains ordinary operational content and department metadata. Do not put lesson explanations, expected findings, ownership-enforcement instructions or attack labels into source records. Keep the data-fiction disclaimer in course documentation. The attack bulletin contains an actual instruction payload; the false assessment states its false claim as a normal finding; the awareness bulletin is a genuine staff-facing description used to measure overblocking.

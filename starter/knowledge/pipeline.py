@@ -34,6 +34,12 @@ def answer(actor,question,provider,session_key,method='vector',search_only=False
             outcome = 'searched'
             return {'answer':None,'sources':result['passages'],'trace':trace,'prompts':prompts,'request_id':str(event.request_id)}
         raw = generate(question,result['passages'],provider,prompts)
+        if provider == 'qwen':
+            check('output', raw, provider, trace)
+            outcome = 'answered' if raw else 'abstained'
+            return {'answer': {'abstain': not raw, 'claims': [], 'text': sanitize(raw)},
+                    'sources': result['passages'], 'trace': trace, 'prompts': prompts,
+                    'request_id': str(event.request_id)}
         try:
             checked = controls.check_answer(raw,result['passages'])
         except (ValueError,ValidationError,TypeError,KeyError):

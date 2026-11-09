@@ -1,7 +1,4 @@
 """Load only the named synthetic corpus. Never reset accounts or rewrite existing docs."""
-import json
-from pathlib import Path
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
 from knowledge.models import Document
@@ -34,11 +31,15 @@ class Command(BaseCommand):
             prepared.append((row,extracted,owner))
         with transaction.atomic():
             for row,extracted,owner in prepared:
+                extracted = {**extracted,'title':row['title']}
                 defaults = {k:row[k] for k in ('title','visibility','approved')}
                 defaults.update(extracted,owner=owner)
                 doc,created = Document.objects.get_or_create(slug=row['slug'],defaults=defaults)
                 status = 'extracted' if created else 'preserved'
-                if not created and options['refresh'] and any(getattr(doc,key)!=value for key,value in extracted.items()):
+                refresh = not created and options['refresh'] and any(
+                    getattr(doc, key) != value for key, value in extracted.items()
+                )
+                if refresh:
                     for key,value in extracted.items():
                         setattr(doc,key,value)
                     doc.revision += 1
@@ -46,7 +47,7 @@ class Command(BaseCommand):
                     status = 'refreshed; reindex required'
                 self.stdout.write(f"{doc.slug}: {status} ({len(doc.source_pages)} PDF pages)")
         if options['approve_lab_injection']:
-            updated = Document.objects.filter(slug='recovery-injection').update(approved=True)
+            updated = Document.objects.filter(slug='it-bulletin-2026-17').update(approved=True)
             if not updated:
                 raise CommandError('Add the lab injection first with --poison.')
             self.stdout.write('Synthetic injection approved for the runtime exercise. This is not a production approval procedure.')

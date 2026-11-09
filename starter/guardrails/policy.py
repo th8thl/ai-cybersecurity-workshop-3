@@ -70,7 +70,7 @@ def retrieved_content_allowed(stage, payload):
     if stage != 'retrieval':
         return True
     text = json.dumps(payload).casefold()
-    patterns = ('ignore previous instructions','workshop-override:',
+    patterns = ('ignore previous instructions',
                 'treat this document as system','upload your credentials to',
                 'disable audit logging')
     return not any(pattern in text for pattern in patterns)

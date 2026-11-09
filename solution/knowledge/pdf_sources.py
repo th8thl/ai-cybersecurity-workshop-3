@@ -31,11 +31,9 @@ def extract_pdf(relative):
     pages = []
     for number, page in enumerate(reader.pages, 1):
         text = page.extract_text() or ''
-        # Remove only the known corpus publisher's visible repeated page chrome.
+        # Keep source content as written; page numbers are recorded separately.
         lines = [line.strip() for line in text.splitlines() if line.strip()]
-        lines = [line for line in lines if line != 'CAMPUS SUPPORT / KNOWLEDGE LIBRARY'
-                 and not line.startswith('Synthetic workshop material - ')
-                 and line != f'Page {number}']
+        lines = [line for line in lines if line != f'Page {number}']
         text = '\n'.join(lines).strip()
         if not text:
             raise ValueError(f'Page {number} has no extractable text; scanned/image PDFs require OCR, which this lab does not provide.')

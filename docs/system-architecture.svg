@@ -8,7 +8,7 @@
   <rect width="1200" height="680" fill="#f4f1e8"/>
   <text x="38" y="46" class="title">Session 3 · Protect the knowledge entering runtime context</text>
   <rect x="35" y="80" width="230" height="100" rx="12" class="box"/>
-  <text x="55" y="114" class="label">Browser / Django</text><text x="55" y="142" class="detail">Session login + CSRF</text><text x="55" y="164" class="detail">Knowledge workspace</text>
+  <text x="55" y="114" class="label">Browser / Django</text><text x="55" y="142" class="detail">Session login + CSRF</text><text x="55" y="164" class="detail">Assistant · tickets and RAG</text>
   <rect x="325" y="80" width="245" height="100" rx="12" class="boundary"/>
   <text x="345" y="114" class="label">Delegated MCP access</text><text x="345" y="142" class="detail">Token outside model prompt</text><text x="345" y="164" class="detail">Server checks knowledge:read</text>
   <rect x="630" y="80" width="235" height="100" rx="12" class="boundary"/>
@@ -35,5 +35,5 @@
   <path d="M650 180V209H300V395H157V413M280 475H328M570 475H623M865 475H918" class="edge"/>
   <rect x="35" y="575" width="1130" height="70" rx="12" class="box"/>
   <text x="55" y="604" class="label">Runtime events: request ID · actor · session fingerprint · source IDs · stage verdicts · outcome</text>
-  <text x="55" y="628" class="detail">No raw questions, private passage text, credentials or model drafts in persistent telemetry. Local processes are not an OS sandbox.</text>
+  <text x="55" y="628" class="detail">The separate Knowledge page calls retrieval directly for search comparison. The Assistant uses MCP and generates cited answers.</text>
 </svg>

@@ -41,9 +41,10 @@ def main():
                 cases=list(csv.DictReader(source))
             for case in cases:
                 owner={'alice':alice,'bob':bob}.get(case['owner'])
-                doc=Document.objects.create(slug='eval-'+case['id'].lower(),title=case['category'],
+                reference='record-'+digest(case['id'])[:12]
+                doc=Document.objects.create(slug=reference,title=case.get('title') or 'Service record',
                     body=case['text'],visibility=case['visibility'],owner=owner,
-                    approved=case['approved']=='true',source='workshop://evaluation/'+case['id'])
+                    approved=case['approved']=='true',source=reference+'.pdf')
                 p=Passage.objects.create(document=doc,ordinal=1,text=case['text'],
                     checksum=digest(case['text']),document_checksum=digest(case['text']),revision=1,
                     embedding_model='demo-synonyms-v1',vector=demo_vector(case['text']))

@@ -13,6 +13,6 @@ def validate_answer(answer, passages):
     by_id = {p['id']:p for p in passages}
     for claim in answer['claims']:
         source = by_id.get(claim['citation'])
-        if source is None or claim['quote'] not in source['text'] or claim['text']!=claim['quote']:
+        if source is None or (not claim['quote'].strip() or claim['quote'] not in source['text']):
             raise ValueError('Unsupported answer: citation and exact excerpt must match a retrieved passage.')
     return answer

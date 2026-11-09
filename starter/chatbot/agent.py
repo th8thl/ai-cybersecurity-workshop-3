@@ -1,8 +1,12 @@
 """Bounded model → authorized MCP tool → observation → model loop."""
 import json
+import re
 from django.conf import settings
-from .mcp_client import discover, MODEL_TOOLS
-from .planner import explicit_creation_request, ticket_request
+from .mcp_client import discover
+from .ai_client import AIClientError
+from .planner import KNOWLEDGE_STEP, explicit_creation_request, ticket_request
+from jsonschema import Draft202012Validator
+from knowledge.pipeline import answer as answer_from_knowledge
 from security.mcp_authorization import require_authorization, TOOL_SCOPES
 from tickets.schema import validate_step, SCHEMA
 from .tool_policy import execute
@@ -27,7 +31,7 @@ def model_history(history):
     return [{"role":item.get("role","user"),"text":str(item.get("text",""))[:500]}
             for item in completed[-6:]]
 
-def run(actor, message, provider, history, last_ticket_id=None, planner=None, trace=None):
+def run(actor, message, provider, history, last_ticket_id=None, planner=None, trace=None, *, session_key=None, prompts=None):
     if planner is None:
         from .planner import plan
         planner = plan
@@ -35,6 +39,10 @@ def run(actor, message, provider, history, last_ticket_id=None, planner=None, tr
     message = sanitize(message)
     intent = ticket_request(message)
     creating = explicit_creation_request(message)
+    # A request for instructions must not turn into a ticket lookup or write.
+    guidance_request = not intent and not creating and re.match(
+        r"^how (?:do|can|should) (?:i|we)\b", message.strip(), re.IGNORECASE
+    )
     if intent:
         require_authorization(actor, TOOL_SCOPES[intent["tool"]])
         if intent.get("latest"):
@@ -51,7 +59,43 @@ def run(actor, message, provider, history, last_ticket_id=None, planner=None, tr
     for index in range(MAX_STEPS):
         context = sanitize({"tools":manifest['tools'],"history":model_history(history),
             "observations":observations,"last_ticket_id":last_ticket_id})
-        proposal = planner(message, provider, context=context)
+        if guidance_request and session_key is not None:
+            proposal = {"tool": "search_knowledge", "arguments": {}}
+        else:
+            proposal = planner(message, provider, context=context)
+        if Draft202012Validator(KNOWLEDGE_STEP).is_valid(proposal):
+            if intent or creating or observations or session_key is None:
+                raise ValueError("Knowledge search is unavailable for this ticket operation.")
+            trace.append({"step": index + 1, "proposal": proposal})
+            try:
+                turn = answer_from_knowledge(actor, message, provider, session_key)
+            except (PermissionError, RuntimeError, ValueError, AIClientError) as exc:
+                trace.extend(getattr(exc, "rag_trace", []))
+                if prompts is not None:
+                    prompts.extend(getattr(exc, "rag_prompts", []))
+                raise
+            trace.append({"knowledge_request_id": turn["request_id"]})
+            trace.extend(turn["trace"])
+            if prompts is not None:
+                prompts.extend(turn["prompts"])
+            answer = turn["answer"]
+            claims = [] if answer["abstain"] else answer["claims"]
+            reply = ("I do not have a supported answer in the retrieved sources." if not claims
+                     else "\n\n".join(claim["text"] for claim in claims))
+            by_id = {source["id"]: source for source in turn["sources"]}
+            evidence = []
+            for claim in claims:
+                source = by_id.get(claim.get("citation"))
+                quote = claim.get("quote")
+                if source and isinstance(quote, str) and quote.strip() and quote in source["text"]:
+                    evidence.append({"filename": source["source"], "page": source["page"],
+                                     "excerpt": quote, "why": claim.get("why", "")})
+            if provider == "qwen":
+                reply = answer["text"] or reply
+                evidence = [{"filename": source["source"], "page": source["page"],
+                             "excerpt": source["text"]} for source in turn["sources"]]
+            return {"reply": reply, "result": None, "trace": trace,
+                    "last_ticket_id": last_ticket_id, "sources": turn["sources"], "evidence": evidence}
         validate_step(proposal)
         trace.append({"step":index+1,"proposal":sanitize(proposal),"mcp_server":manifest['server']})
         if "reply" in proposal:

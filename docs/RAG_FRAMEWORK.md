@@ -22,9 +22,9 @@ The solution applies approved/shared/owner restrictions before vector search, an
 
 ## Generation and grounding
 
-The pipeline calls the authorized `search_knowledge` MCP tool, revalidates its returned sources, applies NeMo to retrieved content, and sends passages as untrusted evidence. Qwen/Gemini returns a structured answer. Application code validates citation membership, exact quotes and matching claim text; unsupported drafts become a visible abstention. No ticket write tools exist in this RAG pipeline.
+The pipeline calls the authorized `search_knowledge` MCP tool, revalidates its returned sources, applies NeMo to retrieved content, and sends passages as untrusted evidence. Qwen returns plain text and the app displays the passages supplied to it. Gemini and Demo use structured claims for the citation validation exercise. Application code checks citation membership and verifies that each quote appears in its cited passage. Drafts that fail those checks become a visible abstention. No ticket write tools exist in this RAG pipeline.
 
-This deliberately extractive design demonstrates grounding that students can verify. It does not prove the excerpt answers the question, that the document is factually correct, or that all harmful instructions can be detected. Evaluate those properties separately with labeled questions and human review.
+The Assistant presents a paraphrased answer with a collapsible **Sources** section. For Qwen, each entry shows a retrieved passage with its filename and page. Evaluate relevance and factual support by comparing the claim with the source.
 
 ## Poisoning terminology
 
@@ -43,4 +43,4 @@ Vector index operations run in a bounded local worker with a cross-process lock.
 
 Source edits: run `seed_knowledge --refresh` to re-extract changed PDF bytes, then `index_knowledge`. File-hash mismatches invalidate old sources in the solution. The importer preserves existing ownership and approval when refreshing; it does not build vectors. Retrieved sources show the filename and original page number.
 
-For live Qwen/Gemini generation, the response schema supplies a bounded set of verbatim evidence excerpts. This improves consistency with small models. Application validation remains independent: an external provider or forged tool/model response can violate a requested format. Cited source support still does not establish relevance or truth.
+For Gemini generation, the response schema supplies a bounded set of verbatim evidence excerpts. This improves consistency with small models. Application validation remains independent: an external provider or forged tool/model response can violate a requested format. Cited source support still does not establish relevance or truth.

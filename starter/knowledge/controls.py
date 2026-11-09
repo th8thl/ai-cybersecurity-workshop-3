@@ -10,6 +10,10 @@ def visible_documents(actor):
     # Exercise 4: limit retrieval to approved shared documents or this actor's own.
     return Document.objects.all()
 
+def accept_document(document):
+    # Exercise 5: verify the imported PDF and its extracted page text.
+    return True
+
 def accept_passage(actor, passage, metadata):
     # Exercise 5: recheck permission, approval, content hash, revision and embedding identity.
     return True

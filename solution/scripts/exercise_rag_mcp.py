@@ -31,6 +31,6 @@ if __name__=='__main__':
     with use_access_token(token):
         manifest=discover(user)
         print('Discovered tools:',[t['name'] for t in manifest['tools']])
-        result=call(user,'search_knowledge',{'question':'billing','method':'keyword'})
+        result=call(user,'search_knowledge',{'question':'billing statement','method':'keyword'})
         print(json.dumps(result,indent=2))
     asyncio.run(forged_actor(token))

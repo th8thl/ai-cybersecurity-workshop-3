@@ -1,84 +1,84 @@
 [
   {
     "slug": "account-recovery",
-    "title": "Account recovery",
-    "visibility": "shared",
-    "approved": true,
+    "title": "Account access support",
     "file": "clean/account-recovery.pdf",
-    "group": "clean"
+    "group": "clean",
+    "approved": true,
+    "visibility": "shared"
   },
   {
     "slug": "wireless-access",
-    "title": "Wireless access",
-    "visibility": "shared",
-    "approved": true,
+    "title": "Wireless connection support",
     "file": "clean/wireless-access.pdf",
-    "group": "clean"
+    "group": "clean",
+    "approved": true,
+    "visibility": "shared"
   },
   {
     "slug": "printing",
-    "title": "Printing assistance",
-    "visibility": "shared",
-    "approved": true,
+    "title": "Printing issue support",
     "file": "clean/printing.pdf",
-    "group": "clean"
+    "group": "clean",
+    "approved": true,
+    "visibility": "shared"
   },
   {
     "slug": "study-support",
-    "title": "Academic support",
-    "visibility": "shared",
-    "approved": true,
+    "title": "Academic support requests",
     "file": "clean/study-support.pdf",
-    "group": "clean"
+    "group": "clean",
+    "approved": true,
+    "visibility": "shared"
   },
   {
     "slug": "security-review",
-    "title": "Security review evidence",
-    "visibility": "shared",
-    "approved": true,
+    "title": "Account-owner query review",
     "file": "clean/security-review.pdf",
-    "group": "clean"
+    "group": "clean",
+    "approved": true,
+    "visibility": "shared"
   },
   {
     "slug": "alice-billing",
-    "title": "Alice private billing note",
-    "visibility": "private",
-    "owner": "alice",
-    "approved": true,
+    "title": "Billing statement - Alice Morgan",
     "file": "clean/alice-billing.pdf",
-    "group": "clean"
+    "group": "clean",
+    "approved": true,
+    "visibility": "private",
+    "owner": "alice"
   },
   {
     "slug": "bob-billing",
-    "title": "Bob private billing note",
-    "visibility": "private",
-    "owner": "bob",
-    "approved": true,
+    "title": "Billing statement - Bob Chen",
     "file": "clean/bob-billing.pdf",
-    "group": "clean"
-  },
-  {
-    "slug": "recovery-injection",
-    "title": "Urgent account recovery update",
-    "visibility": "shared",
-    "approved": false,
-    "file": "poisoned/recovery-injection.pdf",
-    "group": "poisoned"
-  },
-  {
-    "slug": "review-poison",
-    "title": "Unverified security review",
-    "visibility": "shared",
-    "approved": false,
-    "file": "poisoned/review-poison.pdf",
-    "group": "poisoned"
-  },
-  {
-    "slug": "benign-training-quote",
-    "title": "Security training quotation",
-    "visibility": "shared",
+    "group": "clean",
     "approved": true,
-    "file": "poisoned/benign-training-quote.pdf",
-    "group": "poisoned"
+    "visibility": "private",
+    "owner": "bob"
+  },
+  {
+    "slug": "it-bulletin-2026-17",
+    "title": "Account recovery service bulletin",
+    "file": "poisoned/it-bulletin-2026-17.pdf",
+    "group": "poisoned",
+    "approved": false,
+    "visibility": "shared"
+  },
+  {
+    "slug": "appsec-2026-112-addendum",
+    "title": "Ticket lookup security assessment",
+    "file": "poisoned/appsec-2026-112-addendum.pdf",
+    "group": "poisoned",
+    "approved": false,
+    "visibility": "shared"
+  },
+  {
+    "slug": "security-awareness-2026-11",
+    "title": "Suspicious instructions in shared files",
+    "file": "poisoned/security-awareness-2026-11.pdf",
+    "group": "poisoned",
+    "approved": true,
+    "visibility": "shared"
   }
 ]

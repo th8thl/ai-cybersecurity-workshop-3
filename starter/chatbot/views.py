@@ -72,6 +72,8 @@ def chat(request):
         request.session["action_provider"] = provider
         message = request.POST.get("message", "").strip()[:2000]
         tool = ""
+        sources = []
+        evidence = []
         trace = []
         prompts = []
         agent_completed = False
@@ -91,11 +93,16 @@ def chat(request):
                 proposal = json.loads(raw)
                 message = "Test a ticket request."
             else:
+                if not request.session.session_key:
+                    request.session.create()
                 turn = run_agent(request.user,message,provider,history,
                     request.session.get("last_ticket_id"),
-                    planner=lambda message, provider, context: plan(message, provider, context=context, debug=prompts), trace=trace)
+                    planner=lambda message, provider, context: plan(message, provider, context=context, debug=prompts), trace=trace,
+                    session_key=request.session.session_key, prompts=prompts)
                 reply, result, trace = turn["reply"], turn["result"], turn["trace"]
                 tool = turn.get("tool", "")
+                sources = turn.get("sources", [])
+                evidence = turn.get("evidence", [])
                 request.session["last_ticket_id"] = turn["last_ticket_id"]
                 agent_completed = True
             if agent_completed:
@@ -108,7 +115,7 @@ def chat(request):
                 reply = describe(result, tool)
             if not agent_completed:
                 check("output",sanitize(reply),provider,trace)
-            request.session["action_inspection"] = json.dumps(sanitize({"trace":trace,"result":result}),indent=2)
+            request.session["action_inspection"] = json.dumps(sanitize({"trace":trace,"result":result,"sources":sources}),indent=2)
             if proposal is not None:
                 request.session["action_inspection"] = json.dumps(sanitize({"trace":trace,"proposal":proposal,"result":result}), indent=2)
         except MCPAuthorizationError as exc:
@@ -148,7 +155,7 @@ def chat(request):
         if completed_history:
             history.append(completed_history)
         history.append({"role":"error" if error else "assistant", "text":sanitize(reply),
-            "error":bool(error), "source":"ticket" if result is not None and not error else "ai",
+            "error":bool(error), "evidence":sanitize(evidence) if not error else [], "source":"ticket" if result is not None and not error else "ai",
             "ticket_id":result.get("ticket_id") if result is not None and not error else None})
         if blocked_by_guardrail:
             history.append({"role":"assistant", "text":settings.CHATBOT_THEME.get("guardrail_reply",
