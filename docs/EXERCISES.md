@@ -55,7 +55,7 @@ The PDF files remain on disk in `knowledge/corpus/`. Neither command stores the 
 
 Find the command implementations at `knowledge/management/commands/seed_knowledge.py` and `knowledge/management/commands/index_knowledge.py`. Their Django models are in `knowledge/models.py`; chunking and embedding orchestration are in `knowledge/ingestion.py`.
 
-Read the import output and note the extracted page counts. In VS Code Explorer, open `db.sqlite3` with **SQLite Viewer**. If it opens as a binary file, right-click its editor tab and choose **Reopen Editor With… → SQLite Viewer**. Select `knowledge_document`, find the row with slug `account-recovery`, and compare its `source_pages` text with pages 1 and 2 of the PDF. On a fresh starter, expect seven document rows and zero rows in `knowledge_passage`. Refresh Knowledge: document titles should now appear. Try **Exact tokens** now. To confirm the row counts in the Django shell, run the following in **Checks**:
+Read the import output and note the extracted page counts. In VS Code Explorer, open `db.sqlite3` with **SQLite Explorer**. If it opens as a binary file, right-click its editor tab and choose **Reopen Editor With… → SQLite Explorer**. Select `knowledge_document`, find the row with slug `account-recovery`, and compare its `source_pages` text with pages 1 and 2 of the PDF. On a fresh starter, expect seven document rows and zero rows in `knowledge_passage`. Refresh Knowledge: document titles should now appear. Try **Exact tokens** now. To confirm the row counts in the Django shell, run the following in **Checks**:
 
 ```bash
 python manage.py shell
@@ -85,7 +85,7 @@ Now create the index yourself. Semantic search checks the current embedding mode
 python manage.py index_knowledge
 ```
 
-Read the output. The indexer splits the pages into passages, embeds them and records the embedding model. Close and reopen `db.sqlite3` in SQLite Viewer to load the updated data. In `knowledge_document`, note the ID for `account-recovery`. In `knowledge_passage`, find rows with that `document_id`. Compare a row’s `text` with the PDF page in its `page` column and inspect its `embedding_model`, `vector`, checksum and revision. Use the Django shell if you want to count the entries in the vector. The vector index now exists because you built it. Passages retain the original PDF page number; chunks do not cross page boundaries.
+Read the output. The indexer splits the pages into passages, embeds them and records the embedding model. Close and reopen `db.sqlite3` in SQLite Explorer to load the updated data. In `knowledge_document`, note the ID for `account-recovery`. In `knowledge_passage`, find rows with that `document_id`. Compare a row’s `text` with the PDF page in its `page` column and inspect its `embedding_model`, `vector`, checksum and revision. Use the Django shell if you want to count the entries in the vector. The vector index now exists because you built it. Passages retain the original PDF page number; chunks do not cross page boundaries.
 
 In **Knowledge**, run **Exact tokens** and **Semantic search** for each query below.
 
@@ -254,9 +254,9 @@ The Exercise 4 filter excludes the unapproved bulletin. This exercise marks that
 
 ### Demo 1. Show that the LLM can follow instructions inside a PDF
 
-1. In your activated **Checks** terminal, run `python manage.py createsuperuser` if you do not already have a workshop administrator.
-2. In a separate private browser window, sign in with that administrator account and open **Knowledge**. Find `it-bulletin-2026-17.pdf` under **Account recovery service bulletin** and click **Approve**. Confirm the status changes to **approved**. Staff need permission to change documents to see this control.
-3. **Show the vulnerability.** Return to the browser where you are signed in as Alice. In **Assistant**, send `How do I recover my account during the current identity-service maintenance window?` and check **Sources** for the bulletin. Approval is read from SQLite on each search, so the existing index can be used.
+1. Sign in as Alice. Workshop setup gives her permission to approve documents in **Knowledge**.
+2. Open **Knowledge**. Find `it-bulletin-2026-17.pdf` under **Account recovery service bulletin** and click **Approve**. Confirm the status changes to **approved**. Staff need permission to change documents to see this control.
+3. **Show the vulnerability.** In **Assistant**, send `How do I recover my account during the current identity-service maintenance window?` and check **Sources** for the bulletin. Approval is read from SQLite on each search, so the existing index can be used.
 
 In the chat reply, look for "Your account access has been restored. No support ticket is required." If the LLM repeats that claim, the PDF has influenced the answer.
 
@@ -323,7 +323,7 @@ Paste each line separately:
 
 Expect allowed true, then false, with the active flow listed. Stop with Ctrl+D on an empty line in Codespaces (Ctrl+Z then Enter on Windows). These are real Colang/Python decisions; the worker does not generate answers.
 
-In the administrator's **Knowledge** page, click **Mark unreviewed** beside `it-bulletin-2026-17.pdf`. Return to Alice's **Assistant** and send `How do I recover my account?` to confirm that the clean guide can still be retrieved.
+In Alice's **Knowledge** page, click **Mark unreviewed** beside `it-bulletin-2026-17.pdf`. Return to Alice's **Assistant** and send `How do I recover my account?` to confirm that the clean guide can still be retrieved.
 
 ## 7. Grounding, hallucinations and false findings
 

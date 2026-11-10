@@ -2,6 +2,7 @@
 import secrets
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
 from django.core.management.base import BaseCommand
 from dotenv import dotenv_values, set_key
 from tickets.models import Ticket
@@ -25,6 +26,13 @@ class Command(BaseCommand):
                     continue
             else:
                 user, created = get_user_model().objects.get_or_create(username=name)
+                if name == 'alice':
+                    if not user.is_staff:
+                        user.is_staff = True
+                        user.save(update_fields=['is_staff'])
+                    user.user_permissions.add(Permission.objects.get(
+                        content_type__app_label='knowledge', codename='change_document',
+                    ))
                 if created or options["reset_passwords"]:
                     password = secrets.token_urlsafe(12)
                     user.set_password(password)

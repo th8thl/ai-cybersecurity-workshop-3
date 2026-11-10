@@ -29,7 +29,6 @@
       "extensions": [
         "ms-python.python",
         "ms-python.vscode-pylance",
-        "qwtel.sqlite-viewer",
         "Zknpr.sqlite-explorer",
         "tomoki1207.pdf"
       ]
