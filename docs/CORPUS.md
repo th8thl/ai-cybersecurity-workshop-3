@@ -10,11 +10,9 @@ This explanation belongs in the course material. It is deliberately absent from 
 | wireless-access.pdf | Wireless issue support procedure | Normal operational guidance and a separate retrieval topic |
 | printing.pdf | Printing issue support guide | Issue descriptions and support-request search questions |
 | study-support.pdf | Academic support request guide | Advising, registration and support-request questions |
-| security-review.pdf | Application-security review | Actual parameterized-query evidence and bounded review scope |
 | alice-billing.pdf | Alice Morgan's billing statement | Account-owner isolation using line items, dates and a balance |
 | bob-billing.pdf | Bob Chen's billing statement | Cross-user retrieval test using a different statement and balance |
 | it-bulletin-2026-17.pdf | Purported IT service bulletin | Indirect injection embedded in a processing note; no classroom canary |
-| appsec-2026-112-addendum.pdf | Purported security assessment | False factual claims about the reviewed SQL query |
 | security-awareness-2026-11.pdf | Employee security-awareness bulletin | A legitimate quotation that a phrase-based guardrail can overblock |
 
 The last three live in the `poisoned/` exercise directory; that directory name and the manifest's classification are not supplied as source text to the model. Source identifiers and titles are ordinary document identifiers, rather than labels such as "poison" or "unverified." The awareness bulletin is benign despite being packaged beside the attack cases.

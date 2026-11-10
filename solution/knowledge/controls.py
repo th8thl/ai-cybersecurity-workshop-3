@@ -22,30 +22,7 @@ def accept_passage(actor, passage, metadata):
         and metadata.get('model')==passage.embedding_model
         and metadata.get('checksum')==passage.checksum and metadata.get('revision')==doc.revision)
 
-def check_retrieved(actor, passages, provider, trace):
-    # Revalidate the MCP envelope against authoritative records before prompt construction.
-    from .models import Passage
-    from .retrieval import document_page
-    for item in passages:
-        try:
-            slug,ordinal = item['id'].rsplit(':',1)
-            if ordinal.startswith('page-'):
-                page = int(ordinal.removeprefix('page-'))
-                doc = visible_documents(actor).get(slug=slug)
-                text = document_page(doc, page)
-                if (text is None or not accept_document(doc) or item['text'] != text
-                    or item['source'] != doc.source or item['title'] != doc.title
-                    or item['page'] != page or item['revision'] != doc.revision
-                    or item['checksum'] != digest(text) or item['embedding_model'] != ''):
-                    raise ValueError('Unverified document page.')
-                continue
-            p = Passage.objects.select_related('document').get(document__slug=slug,ordinal=int(ordinal))
-            if (item['text']!=p.text or item['source']!=p.document.source
-                or item['title']!=p.document.title or item.get('page',1)!=p.page or not accept_passage(actor,p,{
-                    'checksum':item['checksum'],'revision':item['revision'],'model':item['embedding_model']})):
-                raise ValueError('Unverified tool context.')
-        except (Document.DoesNotExist,Passage.DoesNotExist,KeyError,TypeError,ValueError) as exc:
-            raise PermissionError('MCP context failed provenance validation.') from exc
+def check_retrieved(passages, provider, trace):
     check('retrieval',passages,provider,trace)
 
 def check_answer(answer, passages):

@@ -7,6 +7,15 @@ from .rag_common import RAGTestCase
 
 @override_settings(NEMO_CHECKS=True)
 class RetrievalRailTests(SimpleTestCase):
+    @patch('knowledge.controls.check')
+    def test_retrieval_boundary_calls_guardrail(self, guardrail_check):
+        from knowledge.controls import check_retrieved
+
+        passages = []
+        trace = []
+        check_retrieved(passages, 'mock', trace)
+        guardrail_check.assert_called_once_with('retrieval', passages, 'mock', trace)
+
     def setUp(self):close_worker()
     def tearDown(self):close_worker()
     def test_real_retrieval_flow_blocks_instruction_in_tool_content(self):

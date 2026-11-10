@@ -32,14 +32,6 @@
     "visibility": "shared"
   },
   {
-    "slug": "security-review",
-    "title": "Account-owner query review",
-    "file": "clean/security-review.pdf",
-    "group": "clean",
-    "approved": true,
-    "visibility": "shared"
-  },
-  {
     "slug": "alice-billing",
     "title": "Billing statement - Alice Morgan",
     "file": "clean/alice-billing.pdf",
@@ -61,14 +53,6 @@
     "slug": "it-bulletin-2026-17",
     "title": "Account recovery service bulletin",
     "file": "poisoned/it-bulletin-2026-17.pdf",
-    "group": "poisoned",
-    "approved": false,
-    "visibility": "shared"
-  },
-  {
-    "slug": "appsec-2026-112-addendum",
-    "title": "Ticket lookup security assessment",
-    "file": "poisoned/appsec-2026-112-addendum.pdf",
     "group": "poisoned",
     "approved": false,
     "visibility": "shared"

@@ -28,7 +28,7 @@ def answer(actor,question,provider,session_key,method='vector',search_only=False
         # Tool/MCP results are untrusted. Redact before Debug or model use.
         result = sanitize(result)
         check('tool_result',result,provider,trace)
-        controls.check_retrieved(actor,result['passages'],provider,trace)
+        controls.check_retrieved(result['passages'],provider,trace)
         trace.append({'retrieval':result})
         if search_only:
             outcome = 'searched'

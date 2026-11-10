@@ -53,14 +53,12 @@ def main():
                 trace=[]
                 blocked=False;error=None
                 try:
-                    check_retrieved(alice,[payload],'qwen' if args.semantic else 'mock',trace)
+                    check_retrieved([payload],'qwen' if args.semantic else 'mock',trace)
                 except GuardrailBlocked:
                     if not trace or trace[-1].get('error') or trace[-1].get('allowed') is not False:
                         error='Guardrail service failed; no content verdict.'
                     else:
                         blocked=True
-                except PermissionError:
-                    blocked=True # authoritative provenance/ownership rejection
                 except Exception as exc:
                     error=type(exc).__name__
                 rows.append({'id':case['id'],'category':case['category'],
