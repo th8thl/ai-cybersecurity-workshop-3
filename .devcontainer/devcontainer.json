@@ -28,7 +28,9 @@
       },
       "extensions": [
         "ms-python.python",
-        "ms-python.vscode-pylance"
+        "ms-python.vscode-pylance",
+        "qwtel.sqlite-viewer",
+        "tomoki1207.pdf"
       ]
     }
   },

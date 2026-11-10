@@ -1,4 +1,4 @@
-{% extends 'tickets/base.html' %}{% load static %}{% block content %}
+{% extends 'tickets/base.html' %}{% load static reply_markdown %}{% block content %}
 <div class="workspace chat-workspace">
 <section class="panel chat-panel" aria-label="{{ theme.assistant_name }}">
 <div class="panel-head chat-head">
@@ -6,11 +6,15 @@
 <p class="muted">Manage your tickets or ask a question about the support guides.</p>
 <label class="provider" for="provider">Assistant mode <select id="provider" name="provider" form="chat-form"><option value="mock" {% if selected_provider == 'mock' %}selected{% endif %}>Demo · no model needed</option><option value="qwen" {% if selected_provider == 'qwen' %}selected{% endif %}>Qwen · local AI</option><option value="gemini" {% if selected_provider == 'gemini' %}selected{% endif %}>Gemini</option></select></label>
 <div class="examples">{% for example in portal.examples %}<button type="button" class="secondary" data-message="{{ example.message }}">{{ example.label }}</button>{% endfor %}</div>
+<form method="post" action="{% url 'assistant_clear_history' %}" autocomplete="off">
+  {% csrf_token %}
+  <button type="submit" class="secondary" id="clear-chat">Clear chat history</button>
+</form>
 <label class="debug-toggle"><input type="checkbox" id="debug-toggle" checked> Debug</label>
 </div>
 <div class="conversation" id="conversation" data-assistant-name="{{ theme.assistant_name }}" role="log" aria-live="polite">
 {% if not history %}<div class="bubble assistant"><span class="role">{{ theme.assistant_name }}</span>Hi {{ request.user.username|title }}! {{ portal.greeting }}</div>{% endif %}
-{% for item in history %}<div class="bubble {{ item.role }}{% if item.source == 'guardrail' %} safe-response{% endif %}"><span class="role">{% if item.role == 'user' %}You{% elif item.error or item.role == 'error' %}Application error{% elif item.source == 'ticket' %}Ticket result{% else %}{{ theme.assistant_name }} · AI{% endif %}</span>{{ item.text }}{% if item.evidence %}
+{% for item in history %}<div class="bubble {{ item.role }}{% if item.source == 'guardrail' %} safe-response{% endif %}"><span class="role">{% if item.role == 'user' %}You{% elif item.error or item.role == 'error' %}Application error{% elif item.source == 'ticket' %}Ticket result{% else %}{{ theme.assistant_name }} · AI{% endif %}</span>{% if item.role == 'assistant' and item.source == 'ai' %}{{ item.text|reply_markdown }}{% else %}{{ item.text }}{% endif %}{% if item.evidence %}
 <details><summary>Sources</summary>
 <p class="muted">Source text supplied to the assistant.</p>
 {% for source in item.evidence %}

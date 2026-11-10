@@ -9,6 +9,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 from chatbot.ai_client import AIClientError
 from tickets.models import Ticket, Approval, AuditEvent
 from security.mcp_authorization import authorization_status, MCPAuthorizationError, PERMISSIONS
@@ -50,6 +51,14 @@ def context(request):
         "inspection": request.session.get("action_inspection", ""),
         "prompts": request.session.get("action_prompts", "Send a message to see the exact prompts used for each model step. Demo mode does not call a model."),
     }
+
+@login_required
+@require_POST
+def clear_history(request):
+    for key in ("action_history", "action_inspection", "action_prompts", "last_ticket_id"):
+        request.session.pop(key, None)
+    return redirect("assistant")
+
 
 @login_required
 def chat(request):

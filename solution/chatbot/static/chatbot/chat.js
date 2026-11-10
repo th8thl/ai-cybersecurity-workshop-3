@@ -1,6 +1,7 @@
 const chat = document.getElementById('chat-form');
 const field = document.getElementById('message');
 const send = document.getElementById('send');
+const clearChat = document.getElementById('clear-chat');
 const conversation = document.getElementById('conversation');
 const status = document.getElementById('request-status');
 const debug = document.getElementById('debug-panel');
@@ -54,6 +55,7 @@ document.addEventListener('submit', async event => {
   const submittedMessage = form === chat ? field.value : null;
   busy = true;
   send.disabled = true;
+  clearChat.disabled = true;
   const started = performance.now();
   if (submittedMessage) { bubble('user', submittedMessage); field.value = ''; }
   field.disabled = true;
@@ -98,6 +100,7 @@ document.addEventListener('submit', async event => {
     clearInterval(timer);
     busy = false;
     send.disabled = false;
+    clearChat.disabled = false;
     field.disabled = false;
     field.focus();
   }

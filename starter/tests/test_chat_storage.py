@@ -26,6 +26,20 @@ class ChatInteractionTests(TestCase):
         self.assertContains(self.client.get('/chatbot/'), 'I need help with registration')
         self.assertIn('does not send a model prompt', payload['prompts'])
 
+    def test_clear_history_resets_conversation_and_preserves_ticket_access(self):
+        message = 'I need help with registration for my evening class'
+        self.post(message=message, provider='mock', form_token='first')
+        self.assertEqual(self.client.get('/chatbot/clear/').status_code, 405)
+        self.assertContains(self.client.get('/chatbot/'), message)
+        self.assertRedirects(self.client.post('/chatbot/clear/'), '/chatbot/')
+        for key in ('action_history', 'action_inspection', 'action_prompts', 'last_ticket_id'):
+            self.assertNotIn(key, self.client.session)
+        self.assertEqual(self.client.session['action_provider'], 'mock')
+        self.assertNotContains(self.client.get('/chatbot/'), message)
+        ticket = Ticket.objects.get(owner=self.user)
+        response = self.post(message=f'Show ticket {ticket.pk}', provider='mock')
+        self.assertIsNone(response.json()['error'])
+
     def test_async_duplicate_submission_does_not_repeat_write(self):
         self.post(message='I need help with registration', provider='mock', form_token='once')
         self.post(message='I need help with registration', provider='mock', form_token='once')

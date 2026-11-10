@@ -62,3 +62,23 @@ class KnowledgeInterfaceTests(RAGTestCase):
         self.assertContains(response, 'Start by opening a support request.')
         self.assertContains(response, '<summary>Sources</summary>', html=True)
         self.assertNotContains(response, 'Ticket result')
+
+    def test_only_staff_with_document_permission_can_change_approval(self):
+        from django.contrib.auth.models import Permission
+
+        document, _ = self.source('bulletin', approved=False, source='bulletin.pdf')
+        url = '/knowledge/bulletin/approval/'
+        self.assertContains(self.client.get('/knowledge/'), 'bulletin.pdf')
+        self.assertEqual(self.client.post(url, {'approved': 'true'}).status_code, 403)
+        self.alice.is_staff = True
+        self.alice.save(update_fields=['is_staff'])
+        self.assertEqual(self.client.post(url, {'approved': 'true'}).status_code, 403)
+        self.alice.user_permissions.add(Permission.objects.get(
+            content_type__app_label='knowledge', codename='change_document'))
+        self.assertEqual(self.client.get(url).status_code, 405)
+        self.assertRedirects(self.client.post(url, {'approved': 'true'}), '/knowledge/')
+        document.refresh_from_db()
+        self.assertTrue(document.approved)
+        self.assertRedirects(self.client.post(url, {'approved': 'false'}), '/knowledge/')
+        document.refresh_from_db()
+        self.assertFalse(document.approved)

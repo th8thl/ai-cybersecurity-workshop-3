@@ -6,15 +6,15 @@
 <label for="question">Search query</label>
 <textarea id="question" name="question" maxlength="2000" required>{{ question }}</textarea>
 <div class="examples">
-<button name="method" value="keyword">Exact tokens</button>
+<button name="method" value="keyword">Exact token search</button>
 <button name="method" value="vector">Semantic search</button>
 </div></form>
-<p>Exact tokens finds pages containing any of your search words, ignoring common words such as “I” and “my”.</p>
+<p>Exact token search finds pages containing any of your search words, ignoring common words such as “I” and “my”.</p>
 <p id="search-status" role="status"></p></div>
 <div id="search-results" aria-live="polite">
 {% if error %}<p class="application-error" role="alert">{{ error }}</p>{% endif %}
 {% if result %}<div class="detail-body">
-<h2>{% if method == 'keyword' %}Exact tokens{% else %}Semantic search{% endif %} results</h2>
+<h2>{% if method == 'keyword' %}Exact token search{% else %}Semantic search{% endif %} results</h2>
 <p>{{ result.distance_note }}</p>
 {% if result.dimensions %}<p>{{ result.embedding_model }} · {{ result.dimensions }} dimensions</p>{% endif %}
 {% for source in result.passages %}
@@ -30,7 +30,19 @@
 </div>
 </section><aside class="sidebar"><section class="panel"><div class="panel-head"><h2>Knowledge base</h2></div>
 {% for doc in documents %}<div class="ticket-link"><strong>{{ doc.title }}</strong>
-<small>{{ doc.visibility }} · {% if doc.approved %}approved{% else %}unreviewed{% endif %}</small></div>
+<small>{{ doc.source }}</small>
+<small>{{ doc.visibility }} · {% if doc.approved %}approved{% else %}unreviewed{% endif %}</small>
+{% if request.user.is_staff and perms.knowledge.change_document %}
+<form method="post" action="{% url 'knowledge_set_approval' doc.slug %}">
+  {% csrf_token %}
+  {% if doc.approved %}
+  <button class="secondary" name="approved" value="false">Mark unreviewed</button>
+  {% else %}
+  <button class="secondary" name="approved" value="true">Approve</button>
+  {% endif %}
+</form>
+{% endif %}
+</div>
 {% empty %}<p>No documents yet. Load the workshop documents in Exercise 2.</p>{% endfor %}
 </section></aside></div>
 {% endblock %}
